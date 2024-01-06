@@ -22,6 +22,7 @@ type TableProps = {
   enableStripStyle?: boolean;
   removeStraightLines?: boolean;
   printTools?: boolean;
+  tableTitle?: string;
 };
 
 const itemsPerPageOptions = [5, 10, 15, 20]
@@ -38,7 +39,8 @@ const DBLTable: React.FC<TableProps> = ({
   showActions,
   enableStripStyle = true,
   removeStraightLines,
-  printTools
+  printTools,
+  tableTitle
 }) => {
   // State for pagination
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -93,7 +95,7 @@ const DBLTable: React.FC<TableProps> = ({
   return (
     <div className={`rounded max-h-[700px] inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Merchant List</h3>
+        <h3 className="text-lg font-semibold text-gray-800">{tableTitle ? tableTitle : ''}</h3>
         <div className="flex items-center space-x-2">
           {printTools && (
               <div className="flex items-center justify-center">
