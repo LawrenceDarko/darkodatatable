@@ -8,8 +8,9 @@ You can install `DBLTable` using npm:
 
 ```bash
 npm install dbl-table
+```
 
-
+```jsx
 import React from 'react';
 import DBLTable from 'dbl-table';
 
@@ -37,6 +38,7 @@ const YourComponent = () => {
 };
 
 export default YourComponent;
+```
 
 
 Props
