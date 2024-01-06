@@ -15,7 +15,6 @@
         "jsx": "react",
         "baseUrl": "./",
         "outDir": "./dist",
-        "outFile": "./dist/index.js",
         "paths": {
             "dbl-table": ["src/index.tsx"]
         }
