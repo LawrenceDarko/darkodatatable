@@ -26,7 +26,7 @@ type TableProps = {
 
 const itemsPerPageOptions = [5, 10, 15, 20]
 
-const DarkoDataTable: React.FC<TableProps> = ({
+const DBLTable: React.FC<TableProps> = ({
   data,
   columns,
   toolbars,
@@ -231,4 +231,4 @@ const DarkoDataTable: React.FC<TableProps> = ({
 };
 
 
-export default DarkoDataTable;
+export default DBLTable;

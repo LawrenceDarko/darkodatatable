@@ -16,7 +16,7 @@
         "baseUrl": "./",
         "outDir": "./dist",
         "paths": {
-            "dbl-table": ["src/index.tsx"]
+            "dbl-table": ["node_modules/dbl-table/dist/dbl-table.d.ts"]
         }
     },
     "include": ["src/**/*"],
