@@ -21,15 +21,12 @@ npm  install  dbl-table
 
 ```
 
-  
 
 ```jsx
 
 import  React  from  'react';
-
 import  DBLTable  from  'dbl-table';
 
-  
 
 // Your data and columns configuration
 
@@ -37,7 +34,6 @@ const  data  = [...];  // Array of objects
 
 const  columns  = [...];  // Array of TableColumn objects
 
-  
 
 const  YourComponent  =  ()  =>  {
 
