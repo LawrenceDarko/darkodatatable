@@ -43,46 +43,29 @@ const  YourComponent  =  ()  =>  {
 
 return (
 
-<DBLTable
-
-data={data}
-
-columns={columns}
-
-toolbars={[/* Additional components or buttons to be displayed above the table */]}
-
-enableServerPagination={false}
-
-onPaginationChange={(pagination)  =>  {/* Handle server-side pagination */}}
-
-onGlobalTableSearchChange={(searchTerm)  =>  {/* Handle global table search */}}
-
-loading={false}
-
-renderRowDetails={(props)  =>  {/* Render additional details for each row */}}
-
-showActions={(rowData)  =>  {/* Render actions for each row */}}
-
-enableStripStyle={true}
-
-removeStraightLines={false}
-
-printTools={true}
-
-/>
-
-);
+    <DBLTable
+        data={data}
+        columns={columns}
+        toolbars={[/* Additional components or buttons to be displayed above the table */]}
+        enableServerPagination={false}
+        onPaginationChange={(pagination)  =>  {/* Handle server-side pagination */}}
+        onGlobalTableSearchChange={(searchTerm)  =>  {/* Handle global table search */}}
+        loading={false}
+        renderRowDetails={(props)  =>  {/* Render additional details for each row */}}
+        showActions={(rowData)  =>  {/* Render actions for each row */}}
+        enableStripStyle={true}
+        removeStraightLines={false}
+        printTools={true}
+    />
+    );
 
 };
-
-  
 
 export  default  YourComponent;
 
 ```
 
-  
-  
+
 
 ## Props
 
