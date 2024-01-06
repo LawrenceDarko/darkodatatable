@@ -1,12 +1,12 @@
 {
   "name": "dbl-table",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A React table component",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "/dist"
   ],
   "scripts": {
     "build": "tsc",
