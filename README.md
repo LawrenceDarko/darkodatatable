@@ -27,11 +27,8 @@ npm  install  dbl-table
 import  React  from  'react';
 import  DBLTable  from  'dbl-table';
 
-
 // Your data and columns configuration
-
 const  data  = [...];  // Array of objects
-
 const  columns  = [...];  // Array of TableColumn objects
 
 
@@ -81,6 +78,7 @@ export  default  YourComponent;
 | `enableStripStyle`          | `boolean` (optional)                                  | Enable or disable striped table styling. Default is `true`.                                                                                                  |
 | `removeStraightLines`       | `boolean` (optional)                                  | Remove straight lines (borders) between cells. Default is `false`.                                                                                           |
 | `printTools`                | `boolean` (optional)                                  | Enable or disable printing tools, such as exporting to Excel. Default is `true`.                                                                             |
+| `tableTitle`                | `string` (optional)                                  | A prop that shows the title of the table right at the top left corner.                                                                             |
 
   
 
