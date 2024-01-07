@@ -1,5 +1,3 @@
-Certainly! Here's the updated README.md with the new features, props table, and basic/advanced usage examples:
-
 ```markdown
 # DBLTable
 
