@@ -39,11 +39,7 @@ export default YourComponent;
 ```jsx
 import React, { useState } from 'react';
 import DBLTable from 'dbl-table';
-import { SiMicrosoftexcel } from "react-icons/si";
-import { HiMiniChevronUpDown } from "react-icons/hi2";
-import { RxChevronDown, RxChevronUp } from "react-icons/rx";
-import { TbMoodCry } from "react-icons/tb";
-import { ImSpinner2 } from "react-icons/im";
+
 
 const YourComponent = () => {
   // Your advanced data and columns configuration
