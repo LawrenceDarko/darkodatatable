@@ -3,7 +3,7 @@
 
   
 
-`DBLTable` is a versatile React table component that allows you to display, search, paginate, and export tabular data easily. It supports various customization options and features, making it suitable for a wide range of applications.
+`DBLTable` is a versatile lightweight React table component that allows you to display, search, paginate, and export tabular data easily. It supports various customization options and features, making it suitable for a wide range of applications. It is fully customizable. Make sure `TailwindCSS` is already installed in your project as the table depends on it.
 
   
 
