@@ -1,10 +1,23 @@
 import React, { useState } from 'react';
 import { SiMicrosoftexcel } from "react-icons/si";
+import { HiMiniChevronUpDown } from "react-icons/hi2";
+import { RxChevronDown, RxChevronUp } from "react-icons/rx";
+import { TbMoodCry } from "react-icons/tb";
+import { ImSpinner2 } from "react-icons/im";
 
 type TableColumn = {
   key: string;
   label: string;
   renderCell?: (cellData: any) => React.ReactNode;
+};
+
+type customStylingProp = {
+  component?: React.CSSProperties; // Styles for the component wrapper
+  table?: React.CSSProperties; // Styles for the table
+  header?: React.CSSProperties; // Styles for the table header
+  body?: React.CSSProperties; // Styles for the table body
+  footer?: React.CSSProperties;
+  stripeStyle?: React.CSSProperties;
 };
 
 type TableData = { [key: string]: any }[];
@@ -23,6 +36,8 @@ type TableProps = {
   removeStraightLines?: boolean;
   printTools?: boolean;
   tableTitle?: string;
+  onRowSelection?: (rowData: any) => void;
+  customStyles?: customStylingProp;
 };
 
 const itemsPerPageOptions = [5, 10, 15, 20]
@@ -40,12 +55,30 @@ const DBLTable: React.FC<TableProps> = ({
   enableStripStyle = true,
   removeStraightLines,
   printTools,
-  tableTitle
+  tableTitle,
+  onRowSelection,
+  customStyles = {}
 }) => {
   // State for pagination
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+  
+
+  const handleSort = (column: string) => {
+    // If the same column is clicked, toggle the sort order
+    if (column === sortColumn) {
+      setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+    } else {
+      // If a different column is clicked, set it as the new sorting column
+      setSortColumn(column);
+      setSortOrder('asc');
+    }
+  };
 
   const searchedData = data.filter((item) => {
     if (typeof item === 'object') {
@@ -58,10 +91,25 @@ const DBLTable: React.FC<TableProps> = ({
     return false;
   });
 
+  const sortedData = [...searchedData].sort((a, b) => {
+    const keyA = sortColumn ? a[sortColumn] : null;
+    const keyB = sortColumn ? b[sortColumn] : null;
+
+    if (keyA === keyB) {
+      return 0;
+    }
+
+    if (sortOrder === 'asc') {
+      return keyA < keyB ? -1 : 1;
+    } else {
+      return keyA > keyB ? -1 : 1;
+    }
+  });
+
   // Calculate pagination indexes
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedData = searchedData.slice(startIndex, endIndex);
+  const paginatedData = sortedData.slice(startIndex, endIndex);
 
   // Calculate total pages
   const totalPages = Math.ceil(data?.length / itemsPerPage);
@@ -90,10 +138,78 @@ const DBLTable: React.FC<TableProps> = ({
     link.click();
   };
 
+  const TableRowComp = ({row, rowIndex}: any) => {
+    const [displayRenderDetails, setDisplayRenderDetails] = useState<boolean>(false);
+    const [rowSelectionState, setRowSelectionState] = useState<boolean | any>(false)
+
+    const handleRowSelection = (rowData: any) => {
+      if(rowData && onRowSelection){ 
+        setRowSelectionState(!rowSelectionState)
+        // console.log('Row Data:', rowData)
+        // console.log('Row State:', !rowSelectionState)
+        onRowSelection({rowState: !rowSelectionState, rowData})
+      }
+    }
+
+    return (
+      <React.Fragment>
+        <tr 
+          style={{
+            ...(enableStripStyle && rowIndex % 2 === 0 && customStyles.stripeStyle
+              ? customStyles.stripeStyle
+              : {}),
+            ...(rowSelectionState && { backgroundColor: '#DFF7FF' })
+          }}
+          className={`${enableStripStyle && rowIndex % 2 === 0 ? `bg-gray-100` : 'bg-white'}`}
+          >
+          {onRowSelection && 
+            <td className='px-4 py-3 text-left border-t border-r border-gray-100'>
+              <input className='w-full h-full' type="checkbox" value={rowSelectionState} onChange={()=>handleRowSelection(row)}/>
+            </td>
+          }
+          {renderRowDetails && (
+            <th onClick={() => setDisplayRenderDetails(!displayRenderDetails)} className="px-4 py-3 text-left border-t border-r border-gray-100">
+              {displayRenderDetails ? <RxChevronUp /> : <RxChevronDown />}
+            </th>
+          )}
+          {columns.map((column, colIndex) => (
+            <td
+            key={colIndex}
+            className={`py-3 px-4 ${
+              enableStripStyle && colIndex === columns.length - 1
+                ? 'border-b'
+                : removeStraightLines
+                ? ''
+                : 'border-r'
+            } border-gray-100 ${!enableStripStyle && colIndex === columns.length - 1 ? 'border-b' : 'border-b'}`}
+          >
+            {column.renderCell
+              ? column.renderCell(row[column.key])
+              : row[column.key]
+            }
+          </td>
+          ))}
+          {showActions && (
+            <td className="px-4 py-3 border-b border-gray-100">
+              {showActions(row)}
+            </td>
+          )}
+        </tr>
+        {renderRowDetails && displayRenderDetails && (
+          <tr className={`h-auto ${rowIndex % 2 === 0 ? 'bg-white' : 'bg-white'} transition-max-h duration-300 ease-out border-y border-gray-100`}>
+            <td colSpan={columns.length + (showActions ? 1 : 0)}>
+              {renderRowDetails && renderRowDetails({ row })}
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    )
+  }
+
 
 
   return (
-    <div className={`rounded max-h-[700px] inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`}>
+    <div className={`rounded max-h-[700px] inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`} style={customStyles.component}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-800">{tableTitle ? tableTitle : ''}</h3>
         <div className="flex items-center space-x-2">
@@ -122,65 +238,54 @@ const DBLTable: React.FC<TableProps> = ({
           />
         </div>
       </div>
-      {loading ? (
-        <div className="flex items-center justify-center p-28">
-          Loading...
-        </div>
-      ) : (
         <div>
-          <table className="w-full text-[15px] border-collapse">
-            <thead  className={`${!enableStripStyle && 'bg-gray-100'}`}>
+          <table className="w-full text-[15px] border-collapse" style={customStyles.table}>
+            <thead style={customStyles.header} className={`${!enableStripStyle && 'bg-gray-100'}`}>
               <tr>
+              {onRowSelection &&  <th className="px-4 py-3 text-left border-t border-r border-gray-100">Select</th>}
+              {renderRowDetails && <th className="px-4 py-3 text-left border-t border-r border-gray-100"><HiMiniChevronUpDown /></th>}
                 {columns.map((column, index) => (
                   <th
                     key={index}
                     className={`${!enableStripStyle && 'bg-gray-100'} py-3 px-4 text-left border-r border-t border-gray-100`}
+                    onClick={() => handleSort(column.key)}
                   >
                     {column.label}
+                    {sortColumn === column.key && (
+                      <span className="ml-2">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    )}
                   </th>
                 ))}
                 {showActions && <th className="px-4 py-3 text-left border-t border-r border-gray-100">Actions</th>}
               </tr>
             </thead>
-            <tbody>
-              {paginatedData.map((row, rowIndex) => (
-                <React.Fragment key={rowIndex}>
-                  <tr className={enableStripStyle && rowIndex % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
-                    {columns.map((column, colIndex) => (
-                      <td
-                      key={colIndex}
-                      className={`py-3 px-4 ${
-                        enableStripStyle && colIndex === columns.length - 1
-                          ? 'border-b'
-                          : removeStraightLines
-                          ? ''
-                          : 'border-r'
-                      } border-gray-100 ${!enableStripStyle && colIndex === columns.length - 1 ? 'border-b' : 'border-b'}`}
-                    >
-                      {column.renderCell
-                        ? column.renderCell(row[column.key])
-                        : row[column.key]
-                      }
-                    </td>
-                    ))}
-                    {showActions && (
-                      <td className="px-4 py-3 border-b border-gray-100">
-                        {showActions(row)}
-                      </td>
-                    )}
-                  </tr>
-                  {renderRowDetails && (
-                    <tr className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-white'}>
-                      <td colSpan={columns.length + (showActions ? 1 : 0)}>
-                        <button onClick={() => handlePageChange(currentPage + 1)}>
-                          Show Details
-                        </button>
-                        {renderRowDetails({ row })}
+            <tbody style={customStyles.body}>
+              {data.length === 0 ? (
+                    <tr className='border'>
+                      <td colSpan={columns.length + (showActions ? 1 : 0) + (onRowSelection ? 1 : 0) + (renderRowDetails ? 1 : 0)} className="py-20">
+                        <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
+                          <TbMoodCry className="mr-2 text-4xl text-gray-500" />
+                          No data available
+                        </div>
                       </td>
                     </tr>
+                  ) : (
+                    loading ? (
+                      <tr>
+                        <td colSpan={columns.length + (showActions ? 1 : 0) + (onRowSelection ? 1 : 0) + (renderRowDetails ? 1 : 0)} className="py-20">
+                            <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
+                              <ImSpinner2 className={`animate-spin text-4xl`}/>
+                              <p>Loading Data...</p>
+                            </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      // Render table rows
+                      paginatedData.map((row, rowIndex) => (
+                        <TableRowComp key={rowIndex} row={row} rowIndex={rowIndex}/>
+                      ))
+                    )
                   )}
-                </React.Fragment>
-              ))}
             </tbody>
           </table>
           <div className="flex items-center justify-between mt-4">
@@ -227,7 +332,6 @@ const DBLTable: React.FC<TableProps> = ({
             </div>
           </div>
         </div>
-      )}
     </div>
   );
 };
