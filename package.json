@@ -6,11 +6,11 @@
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "files": [
-    "/dist",
-    "src/style.css"
+    "dist",
+    "style.css"
   ],
   "scripts": {
-    "build": "tsc && cp src/style.css dist/style.css",
+    "build": "tsc && copy src\\styles.css dist\\styles.css",
     "prepare": "npm run build"
   },
   "peerDependencies": {
@@ -28,7 +28,7 @@
     "react",
     "table",
     "dbl-table",
-    "DBL",
+    "DBL Table",
     "DBLTable"
   ],
   "author": "Your Name",
