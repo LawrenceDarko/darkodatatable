@@ -4,6 +4,7 @@ import { HiMiniChevronUpDown } from "react-icons/hi2";
 import { RxChevronDown, RxChevronUp } from "react-icons/rx";
 import { TbMoodCry } from "react-icons/tb";
 import { ImSpinner2 } from "react-icons/im";
+import { VscError } from "react-icons/vsc";
 
 type TableColumn = {
   key: string;
@@ -14,6 +15,7 @@ type TableColumn = {
 type customStylingProp = {
   component?: React.CSSProperties; // Styles for the component wrapper
   table?: React.CSSProperties; // Styles for the table
+  tableWrapper?: React.CSSProperties;
   header?: React.CSSProperties; // Styles for the table header
   body?: React.CSSProperties; // Styles for the table body
   footer?: React.CSSProperties;
@@ -23,13 +25,14 @@ type customStylingProp = {
 type TableData = { [key: string]: any }[];
 
 type TableProps = {
-  data: TableData;
+  data: TableData | null | any;
   columns: TableColumn[];
   toolbars?: React.ReactNode[];
   enableServerPagination?: boolean;
   onPaginationChange?: (pagination: { pageIndex: number; pageSize: number }) => void;
   onGlobalTableSearchChange?: (searchTerm: string) => void;
   loading?: boolean;
+  isError?: boolean;
   renderRowDetails?: (props: { row: any }) => React.ReactNode;
   showActions?: (rowData: any) => React.ReactNode;
   enableStripStyle?: boolean;
@@ -40,7 +43,7 @@ type TableProps = {
   customStyles?: customStylingProp;
 };
 
-const itemsPerPageOptions = [5, 10, 15, 20]
+const itemsPerPageOptions = [5, 8, 10, 15, 20]
 
 const DBLTable: React.FC<TableProps> = ({
   data,
@@ -50,6 +53,7 @@ const DBLTable: React.FC<TableProps> = ({
   onPaginationChange,
   onGlobalTableSearchChange,
   loading = false,
+  isError = false,
   renderRowDetails,
   showActions,
   enableStripStyle = true,
@@ -67,31 +71,29 @@ const DBLTable: React.FC<TableProps> = ({
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  
-
   const handleSort = (column: string) => {
-    // If the same column is clicked, toggle the sort order
     if (column === sortColumn) {
       setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
     } else {
-      // If a different column is clicked, set it as the new sorting column
       setSortColumn(column);
       setSortOrder('asc');
     }
   };
 
-  const searchedData = data.filter((item) => {
+  // if (!Array.isArray(data)) {
+  //   throw new Error("Data must be an array");
+  // }
+
+  const searchedData = Array.isArray(data) ? data.filter((item: any) => {
     if (typeof item === 'object') {
-      // Check if any property includes the searchTerm
       return Object.values(item).some((value) =>
         typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    // If it's not an object, we cannot search through properties, so return false
     return false;
-  });
+  }) : [];
 
-  const sortedData = [...searchedData].sort((a, b) => {
+  const sortedData = searchedData ? [...searchedData].sort((a, b) => {
     const keyA = sortColumn ? a[sortColumn] : null;
     const keyB = sortColumn ? b[sortColumn] : null;
 
@@ -104,15 +106,13 @@ const DBLTable: React.FC<TableProps> = ({
     } else {
       return keyA > keyB ? -1 : 1;
     }
-  });
+  }) : [];
 
-  // Calculate pagination indexes
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedData = sortedData.slice(startIndex, endIndex);
+  const paginatedData = Array.isArray(sortedData) ? sortedData.slice(startIndex, endIndex) : [];
 
-  // Calculate total pages
-  const totalPages = Math.ceil(data?.length / itemsPerPage);
+  const totalPages = Math.ceil((data?.length || 1) / itemsPerPage);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -120,24 +120,28 @@ const DBLTable: React.FC<TableProps> = ({
   };
 
   const handleSearchChange = (term: string) => {
-    onGlobalTableSearchChange ? onGlobalTableSearchChange(term) : setSearchTerm(term);;
-    setCurrentPage(1); // Reset current page when search term changes
+    onGlobalTableSearchChange ? onGlobalTableSearchChange(term) : setSearchTerm(term);
+    setCurrentPage(1);
   };
 
   const handleExportToExcel = () => {
-    // Implement your logic for exporting data to Excel here
-    // For simplicity, let's assume 'data' is an array of objects and 'columns' contains the keys
-    const csvContent = columns.map(column => column.label).join(',') + '\n';
-    const csvRows = data.map(row => columns.map(column => row[column.key]).join(',')).join('\n');
-    const csvData = csvContent + csvRows;
+    try {
+      const csvContent = columns.map(column => column.label).join(',') + '\n';
+      const csvRows = data.map((row: any) => columns.map(column => row[column.key]).join(',')).join('\n');
+      const csvData = csvContent + csvRows;
 
-    const blob = new Blob([csvData], { type: 'text/csv' });
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = 'exported_data.csv';
-    link.click();
+      const blob = new Blob([csvData], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = 'exported_data.csv';
+      link.click();
+    } catch (error) {
+      console.error("Error exporting data to Excel:", error);
+    }
   };
 
+
+  
   const TableRowComp = ({row, rowIndex}: any) => {
     const [displayRenderDetails, setDisplayRenderDetails] = useState<boolean>(false);
     const [rowSelectionState, setRowSelectionState] = useState<boolean | any>(false)
@@ -164,7 +168,7 @@ const DBLTable: React.FC<TableProps> = ({
           >
           {onRowSelection && 
             <td className='px-4 py-3 text-left border-t border-r border-gray-100'>
-              <input className='w-full h-full' type="checkbox" value={rowSelectionState} onChange={()=>handleRowSelection(row)}/>
+              <input className='w-[14px] h-[14px]' type="checkbox" value={rowSelectionState} onChange={()=>handleRowSelection(row)}/>
             </td>
           }
           {renderRowDetails && (
@@ -210,7 +214,7 @@ const DBLTable: React.FC<TableProps> = ({
 
   return (
     <div className={`rounded max-h-[700px] inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`} style={customStyles.component}>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 bg-white">
         <h3 className="text-lg font-semibold text-gray-800">{tableTitle ? tableTitle : ''}</h3>
         <div className="flex items-center space-x-2">
           {printTools && (
@@ -238,7 +242,7 @@ const DBLTable: React.FC<TableProps> = ({
           />
         </div>
       </div>
-        <div>
+        <div style={customStyles.tableWrapper} className='max-h-[500px] overflow-auto my-custom-scrollbar2'>
           <table className="w-full text-[15px] border-collapse" style={customStyles.table}>
             <thead style={customStyles.header} className={`${!enableStripStyle && 'bg-gray-100'}`}>
               <tr>
@@ -259,36 +263,48 @@ const DBLTable: React.FC<TableProps> = ({
                 {showActions && <th className="px-4 py-3 text-left border-t border-r border-gray-100">Actions</th>}
               </tr>
             </thead>
-            <tbody style={customStyles.body}>
-              {data.length === 0 ? (
-                    <tr className='border'>
-                      <td colSpan={columns.length + (showActions ? 1 : 0) + (onRowSelection ? 1 : 0) + (renderRowDetails ? 1 : 0)} className="py-20">
-                        <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
-                          <TbMoodCry className="mr-2 text-4xl text-gray-500" />
-                          No data available
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    loading ? (
-                      <tr>
-                        <td colSpan={columns.length + (showActions ? 1 : 0) + (onRowSelection ? 1 : 0) + (renderRowDetails ? 1 : 0)} className="py-20">
-                            <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
-                              <ImSpinner2 className={`animate-spin text-4xl`}/>
-                              <p>Loading Data...</p>
-                            </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      // Render table rows
-                      paginatedData.map((row, rowIndex) => (
-                        <TableRowComp key={rowIndex} row={row} rowIndex={rowIndex}/>
-                      ))
-                    )
-                  )}
-            </tbody>
+            <tbody style={customStyles.body} className='my-custom-scrollbar'>
+            {isError ? ( 
+              <tr className='border'>
+                <td colSpan={columns.length + (showActions ? 1 : 0) + (onRowSelection ? 1 : 0) + (renderRowDetails ? 1 : 0)} className="py-20">
+                  <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
+                    <VscError className="mr-2 text-[4rem] text-red-300" />
+                    <span className="text-gray-500">Error in fetching data. Please try again.</span>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              data?.length === 0 ? (
+                <tr className='border'>
+                  <td colSpan={columns.length + (showActions ? 1 : 0) + (onRowSelection ? 1 : 0) + (renderRowDetails ? 1 : 0)} className="py-20">
+                    <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
+                      <TbMoodCry className="mr-2 text-4xl text-gray-500" />
+                      No data available
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                loading ? (
+                  <tr>
+                    <td colSpan={columns.length + (showActions ? 1 : 0) + (onRowSelection ? 1 : 0) + (renderRowDetails ? 1 : 0)} className="py-20">
+                      <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
+                        <ImSpinner2 className={`animate-spin text-4xl`}/>
+                        <p>Loading Data...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  // Render table rows
+                  paginatedData?.map((row, rowIndex) => (
+                    <TableRowComp key={rowIndex} row={row} rowIndex={rowIndex}/>
+                  ))
+                )
+              )
+            )}
+          </tbody>
+
           </table>
-          <div className="flex items-center justify-between mt-4">
+          <div className="sticky bottom-0 flex items-center justify-between mt-4 bg-white">
             <div>
               <span className="mr-2">Items per page:</span>
               <select

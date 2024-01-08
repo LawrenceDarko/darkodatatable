@@ -117,4 +117,7 @@ export default YourComponent;
 - **Row Selection:** Enable row selection with the ability to handle selection events.
 - **Custom Styling:** Customize the table appearance with the `customStyles` prop.
 
-Feel free to customize and extend the component according to your specific requirements. If you encounter any issues or have suggestions for improvements, please open an issue on
+Feel free to customize and extend the component according to your specific requirements. If you encounter any issues or have suggestions for improvements, please open an issue on the GitHub repository.
+
+
+Happy coding! 🚀

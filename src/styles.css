@@ -1,0 +1,22 @@
+.my-custom-scrollbar {
+    /* Set the width and color of the scrollbar track */
+    scrollbar-width: thin;
+    /* border-radius: 10px; */
+    scrollbar-color: #888 #f1f1f1;
+}
+
+.my-custom-scrollbar::-webkit-scrollbar {
+    /* For WebKit browsers (Chrome, Safari) */
+    width: 8px;
+}
+
+.my-custom-scrollbar::-webkit-scrollbar-thumb {
+    /* Set the color of the scrollbar thumb (the draggable part) */
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+.my-custom-scrollbar::-webkit-scrollbar-track {
+    /* Set the color of the scrollbar track (the area where the thumb travels) */
+    background-color: #fff;
+    }
