@@ -9,6 +9,7 @@ import { VscError } from "react-icons/vsc";
 type TableColumn = {
   key: string;
   label: string;
+  width?: number 
   renderCell?: (cellData: any) => React.ReactNode;
 };
 
@@ -178,19 +179,21 @@ const DBLTable: React.FC<TableProps> = ({
           )}
           {columns.map((column, colIndex) => (
             <td
-            key={colIndex}
-            className={`py-3 px-4 ${
-              enableStripStyle && colIndex === columns.length - 1
-                ? 'border-b'
-                : removeStraightLines
-                ? ''
-                : 'border-r'
-            } border-gray-100 ${!enableStripStyle && colIndex === columns.length - 1 ? 'border-b' : 'border-b'}`}
-          >
-            {column.renderCell
-              ? column.renderCell(row[column.key])
-              : row[column.key]
-            }
+              title={row[column.key]} 
+              key={colIndex}
+              className={`py-3 px-4 ${
+                enableStripStyle && colIndex === columns.length - 1
+                  ? 'border-b'
+                  : removeStraightLines
+                  ? ''
+                  : 'border-r'
+              } border-gray-100 ${!enableStripStyle && colIndex === columns.length - 1 ? 'border-b' : 'border-b'}`}
+              style={{ maxWidth: column.width, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+            >
+              {column.renderCell
+                ? column.renderCell(row[column.key])
+                : row[column.key]
+              }
           </td>
           ))}
           {showActions && (
@@ -252,6 +255,7 @@ const DBLTable: React.FC<TableProps> = ({
                   <th
                     key={index}
                     className={`${!enableStripStyle && 'bg-gray-100'} py-3 px-4 text-left border-r border-t border-gray-100`}
+                    style={{ maxWidth: column.width, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                     onClick={() => handleSort(column.key)}
                   >
                     {column.label}
