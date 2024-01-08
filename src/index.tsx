@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SiMicrosoftexcel } from "react-icons/si";
 import { HiMiniChevronUpDown } from "react-icons/hi2";
 import { RxChevronDown, RxChevronUp } from "react-icons/rx";
@@ -9,8 +9,8 @@ import { VscError } from "react-icons/vsc";
 type TableColumn = {
   key: string;
   label: string;
-  width?: number 
   renderCell?: (cellData: any) => React.ReactNode;
+  width?: number 
 };
 
 type customStylingProp = {
@@ -65,12 +65,27 @@ const DBLTable: React.FC<TableProps> = ({
   customStyles = {}
 }) => {
   // State for pagination
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
 
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
+
+  useEffect(() => {
+    const styleSheet = document.createElement('link');
+    styleSheet.href = 'style.css'; // Adjust the path if needed
+    styleSheet.rel = 'stylesheet';
+    document.head.appendChild(styleSheet);
+  
+    return () => {
+      // Cleanup on component unmount if necessary
+      document.head.removeChild(styleSheet);
+    };
+  }, []);
+
+  
 
   const handleSort = (column: string) => {
     if (column === sortColumn) {
@@ -81,9 +96,7 @@ const DBLTable: React.FC<TableProps> = ({
     }
   };
 
-  // if (!Array.isArray(data)) {
-  //   throw new Error("Data must be an array");
-  // }
+
 
   const searchedData = Array.isArray(data) ? data.filter((item: any) => {
     if (typeof item === 'object') {
@@ -216,7 +229,7 @@ const DBLTable: React.FC<TableProps> = ({
 
 
   return (
-    <div className={`rounded max-h-[700px] inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`} style={customStyles.component}>
+    <div className={`rounded max-h-auto inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`} style={customStyles.component}>
       <div className="flex items-center justify-between mb-4 bg-white">
         <h3 className="text-lg font-semibold text-gray-800">{tableTitle ? tableTitle : ''}</h3>
         <div className="flex items-center space-x-2">
@@ -245,7 +258,7 @@ const DBLTable: React.FC<TableProps> = ({
           />
         </div>
       </div>
-        <div style={customStyles.tableWrapper} className='max-h-[500px] overflow-auto my-custom-scrollbar2'>
+        <div style={customStyles.tableWrapper} className='max-h-[600px] overflow-auto my-custom-scrollbar2'>
           <table className="w-full text-[15px] border-collapse" style={customStyles.table}>
             <thead style={customStyles.header} className={`${!enableStripStyle && 'bg-gray-100'}`}>
               <tr>
@@ -308,7 +321,8 @@ const DBLTable: React.FC<TableProps> = ({
           </tbody>
 
           </table>
-          <div className="sticky bottom-0 flex items-center justify-between mt-4 bg-white">
+          </div>
+          <div className="sticky bottom-0 flex items-center justify-between w-full mt-4 bg-white">
             <div>
               <span className="mr-2">Items per page:</span>
               <select
@@ -351,7 +365,7 @@ const DBLTable: React.FC<TableProps> = ({
               )}
             </div>
           </div>
-        </div>
+        
     </div>
   );
 };
