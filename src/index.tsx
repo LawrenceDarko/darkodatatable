@@ -5,6 +5,7 @@ import { RxChevronDown, RxChevronUp } from "react-icons/rx";
 import { TbMoodCry } from "react-icons/tb";
 import { ImSpinner2 } from "react-icons/im";
 import { VscError } from "react-icons/vsc";
+import './styles.css'
 
 type TableColumn = {
   key: string;
