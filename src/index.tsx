@@ -5,13 +5,12 @@ import { RxChevronDown, RxChevronUp } from "react-icons/rx";
 import { TbMoodCry } from "react-icons/tb";
 import { ImSpinner2 } from "react-icons/im";
 import { VscError } from "react-icons/vsc";
-import './styles.css'
 
 type TableColumn = {
   key: string;
   label: string;
   renderCell?: (cellData: any) => React.ReactNode;
-  width?: number 
+  width?: number | string;
 };
 
 type customStylingProp = {
@@ -190,7 +189,7 @@ const DBLTable: React.FC<TableProps> = ({
                   ? ''
                   : 'border-r'
               } border-gray-100 ${!enableStripStyle && colIndex === columns.length - 1 ? 'border-b' : 'border-b'}`}
-              style={{...customStyles.tableCell, maxWidth: column.width, overflow: 'hidden', textOverflow: 'ellipsis'}}
+              style={{...customStyles.tableCell, overflow: 'hidden', textOverflow: 'ellipsis'}}
             >
               {column.renderCell
                 ? column.renderCell(row[column.key])
@@ -248,7 +247,7 @@ const DBLTable: React.FC<TableProps> = ({
         </div>
       </div>
         <div style={customStyles.tableWrapper} className='max-h-[600px] overflow-auto my-custom-scrollbar2'>
-          <table className="w-full text-[15px] border-collapse" style={customStyles.table}>
+          <table className="w-full text-[15px] border-collapse" style={{...customStyles.table}}>
             <thead style={customStyles.header} className={`${!enableStripStyle && 'bg-gray-100'}`}>
               <tr>
               {onRowSelection &&  <th className="px-4 py-3 text-left border-t border-r border-gray-100">Select</th>}
@@ -257,7 +256,7 @@ const DBLTable: React.FC<TableProps> = ({
                   <th
                     key={index}
                     className={`${!enableStripStyle && 'bg-gray-100'} py-3 px-4 text-left border-r border-t border-gray-100`}
-                    style={{ maxWidth: column.width, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    style={{ minWidth: column.width, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
                     onClick={() => handleSort(column.key)}
                   >
                     {column.label}
