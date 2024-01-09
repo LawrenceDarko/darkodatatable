@@ -54,6 +54,7 @@ const YourComponent = () => {
     body: { /* Your custom styles for the table body */ },
     footer: { /* Your custom styles for the table footer */ },
     stripeStyle: { /* Your custom styles for striped rows */ },
+    tableCell: { /* Your custom styles for table cells*/ }
   };
 
   // Your additional features
@@ -107,7 +108,7 @@ export default YourComponent;
 | `printTools`                | `boolean` (optional)                                  | Enable or disable printing tools, such as exporting to Excel. Default is `true`.                                                                             |
 | `tableTitle`                | `string` (optional)                                   | Title to be displayed above the table.                                                                                                                     |
 | `onRowSelection`            | `(rowData: { rowState: boolean, rowData: any }) => void` (optional) | Callback function triggered when a row is selected/deselected. It provides the row state and data.                                                     |
-| `customStyles`              | `customStylingProp` (optional)                        | Custom styles for various parts of the table (component, table, header, body, footer, stripeStyle).                                                         |
+| `customStyles`              | `customStylingProp` (optional)                        | Custom styles for various parts of the table (component, table, tableCell header, body, footer, stripeStyle).                                                         |
 
 ## Additional Features
 

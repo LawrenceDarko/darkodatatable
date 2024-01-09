@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { SiMicrosoftexcel } from "react-icons/si";
 import { HiMiniChevronUpDown } from "react-icons/hi2";
 import { RxChevronDown, RxChevronUp } from "react-icons/rx";
 import { TbMoodCry } from "react-icons/tb";
 import { ImSpinner2 } from "react-icons/im";
 import { VscError } from "react-icons/vsc";
-import './styles.css';  
-
-
+import './styles.css'
 
 type TableColumn = {
   key: string;
@@ -24,6 +22,7 @@ type customStylingProp = {
   body?: React.CSSProperties; // Styles for the table body
   footer?: React.CSSProperties;
   stripeStyle?: React.CSSProperties;
+  tableCell?: React.CSSProperties;
 };
 
 type TableData = { [key: string]: any }[];
@@ -75,21 +74,6 @@ const DBLTable: React.FC<TableProps> = ({
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-
-  useEffect(() => {
-    const styleSheet = document.createElement('link');
-    styleSheet.href = 'style.css'; // Adjust the path if needed
-    styleSheet.rel = 'stylesheet';
-    document.head.appendChild(styleSheet);
-  
-    return () => {
-      // Cleanup on component unmount if necessary
-      document.head.removeChild(styleSheet);
-    };
-  }, []);
-
-
-
   const handleSort = (column: string) => {
     if (column === sortColumn) {
       setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
@@ -99,7 +83,9 @@ const DBLTable: React.FC<TableProps> = ({
     }
   };
 
-
+  // if (!Array.isArray(data)) {
+  //   throw new Error("Data must be an array");
+  // }
 
   const searchedData = Array.isArray(data) ? data.filter((item: any) => {
     if (typeof item === 'object') {
@@ -204,7 +190,7 @@ const DBLTable: React.FC<TableProps> = ({
                   ? ''
                   : 'border-r'
               } border-gray-100 ${!enableStripStyle && colIndex === columns.length - 1 ? 'border-b' : 'border-b'}`}
-              style={{ maxWidth: column.width, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              style={{...customStyles.tableCell, maxWidth: column.width, overflow: 'hidden', textOverflow: 'ellipsis'}}
             >
               {column.renderCell
                 ? column.renderCell(row[column.key])
