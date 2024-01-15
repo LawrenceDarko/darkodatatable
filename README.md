@@ -64,6 +64,7 @@ const YourComponent = () => {
   const renderRowDetails = (props) => { /* Render additional details for each row */ };
   const showActions = (rowData) => { /* Render actions for each row */ };
   const onRowSelection = ({ rowState, rowData }) => { /* Handle row selection */ };
+  const userComponents = (<div>{/* Render your own components */}</div>)
 
   return (
     <DBLTable
@@ -81,6 +82,7 @@ const YourComponent = () => {
       printTools={true}
       tableTitle="Your Table Title"
       onRowSelection={onRowSelection}
+      userComponents={userComponents}
       customStyles={customStyles}
     />
   );
@@ -109,6 +111,7 @@ export default YourComponent;
 | `tableTitle`                | `string` (optional)                                   | Title to be displayed above the table.                                                                                                                     |
 | `onRowSelection`            | `(rowData: { rowState: boolean, rowData: any }) => void` (optional) | Callback function triggered when a row is selected/deselected. It provides the row state and data.                                                     |
 | `customStyles`              | `customStylingProp` (optional)                        | Custom styles for various parts of the table (component, table, tableCell header, body, footer, stripeStyle).                                                         |
+| `userComponents`            | `() => React.ReactNode` (optional)                       | Allows users to pass their own custom components to the table.                                                         |
 
 ## Additional Features
 
