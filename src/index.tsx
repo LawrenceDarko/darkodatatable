@@ -201,7 +201,7 @@ const DBLTable: React.FC<TableProps> = ({
           </td>
           ))}
           {showActions && (
-            <td className="px-4 py-3 border-b border-gray-100">
+            <td className={`px-4 py-3 border-b border-gray-100 ${!removeStraightLines ? 'border-l-gray-100' : ''}`}>
               {showActions(row)}
             </td>
           )}
