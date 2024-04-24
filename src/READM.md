@@ -79,7 +79,9 @@ export  default  YourComponent;
 | `enableStripStyle`          | `boolean` (optional)                                  | Enable or disable striped table styling. Default is `true`.                                                                                                  |
 | `removeStraightLines`       | `boolean` (optional)                                  | Remove straight lines (borders) between cells. Default is `false`.                                                                                           |
 | `printTools`                | `boolean` (optional)                                  | Enable or disable printing tools, such as exporting to Excel. Default is `true`.                                                                             |
-| `tableTitle`                | `string` (optional)                                  | A prop that shows the title of the table right at the top left corner.                                                                             |
+| `tableTitle`                | `string` (optional)                                  | A prop that shows the title of the table right at the top left corner.                                                                             
+| `showSearch`                | `boolean` (optional)                                  | A prop that shows the search bar of the table right at the top right corner. It is true by default 
+
 
   
 

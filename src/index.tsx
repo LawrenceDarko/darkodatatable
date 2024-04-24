@@ -45,6 +45,7 @@ type TableProps = {
   tableTitle?: string;
   onRowSelection?: (rowData: any) => void;
   customStyles?: customStylingProp;
+  showSearch?: boolean;
 };
 
 const itemsPerPageOptions = [5, 8, 10, 15, 20]
@@ -66,6 +67,7 @@ const DBLTable: React.FC<TableProps> = ({
   printTools,
   tableTitle,
   onRowSelection,
+  showSearch = true,
   customStyles = {}
 }) => {
   // State for pagination
@@ -241,12 +243,12 @@ const DBLTable: React.FC<TableProps> = ({
                 {toolbar}
               </div>
             ))}
-          <input
+          {showSearch && <input
             type="text"
             placeholder="Search..."
             className="px-2 py-1 border border-gray-300 rounded focus:outline-none"
             onChange={(e) => handleSearchChange(e.target.value)}
-          />
+          />}
         </div>
       </div>
       <div>
