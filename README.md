@@ -41,6 +41,7 @@ import React, { useState } from 'react';
 import DBLTable from 'dbl-table';
 
 
+
 const YourComponent = () => {
   // Your advanced data and columns configuration
   const data = [...]; // Array of objects
@@ -74,12 +75,14 @@ const YourComponent = () => {
       enableServerPagination={true}
       onPaginationChange={onPaginationChange}
       onGlobalTableSearchChange={onGlobalTableSearchChange}
+      globalSearchText={/* state of the search term for server-side filtering. Only use for server-side search */}
       loading={false}
       renderRowDetails={renderRowDetails}
       showActions={showActions}
       enableStripStyle={true}
       removeStraightLines={false}
       printTools={true}
+      totalRowCount={/* Enter use the total row count only when you're doing server side pagination*/}
       tableTitle="Your Table Title"
       onRowSelection={onRowSelection}
       userComponents={userComponents}
@@ -112,7 +115,9 @@ export default YourComponent;
 | `onRowSelection`            | `(rowData: { rowState: boolean, rowData: any }) => void` (optional) | Callback function triggered when a row is selected/deselected. It provides the row state and data.                                                     |
 | `customStyles`              | `customStylingProp` (optional)                        | Custom styles for various parts of the table (component, table, tableCell header, body, footer, stripeStyle).                                                         |
 | `userComponents`            | `() => React.ReactNode` (optional)                       | Allows users to pass their own custom components to the table.                                                         |
-| `showSearch`                | `boolean` (optional)                                  | A prop that shows the search bar of the table right at the top right corner. It is true by default 
+| `showSearch`                | `boolean` (optional)                                  | A prop that shows the search bar of the table right at the top right corner. It is true by default                                                              |
+| `totalRowsCount`                | `number` (optional)                                  | A prop that is used for server-side pagination. Pass the total rows count| 
+| `globalSearchText`                | `string` (optional)                                  | A prop that is used for server-side global searh. Pass the state of the global search term count 
 
 ## Additional Features
 
