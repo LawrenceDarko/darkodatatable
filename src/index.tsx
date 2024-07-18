@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { SiMicrosoftexcel } from "react-icons/si";
 import { HiMiniChevronUpDown } from "react-icons/hi2";
+import { IoSearchOutline } from "react-icons/io5";
 import { RxChevronDown, RxChevronUp } from "react-icons/rx";
 import { TbMoodCry } from "react-icons/tb";
 import { ImSpinner2 } from "react-icons/im";
 import { VscError } from "react-icons/vsc";
-import './styles.css'
+// import './styles.css'
 import './style.css'
 
 type TableColumn = {
@@ -142,7 +143,7 @@ const DBLTable: React.FC<TableProps> = ({
   };
 
   const handleSearchChange = (term: string) => {
-    console.log('Search Term:', term)
+    // console.log('Search Term:', term)
     onGlobalTableSearchChange ? onGlobalTableSearchChange(term) : setSearchTerm(term);
     // onGlobalTableSearchChange && onGlobalTableSearchChange(globalSearchText)
     setCurrentPage(1);
@@ -241,7 +242,7 @@ const DBLTable: React.FC<TableProps> = ({
   return (
     <div className={`rounded max-h-auto inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`} style={customStyles.component}>
       <div className="flex items-center justify-between mb-4 bg-white">
-        <div className='flex flex-col items-center w-full md:justify-between md:flex-row'>
+        <div className='flex flex-col items-center justify-between w-full md:flex-row'>
           <h3 className="text-lg font-semibold text-gray-800">{tableTitle ? tableTitle : ''}</h3>
           <div className="flex flex-wrap items-center justify-center w-full space-x-2 md:justify-end">
             {printTools && (
@@ -269,7 +270,7 @@ const DBLTable: React.FC<TableProps> = ({
                 placeholder='Search anything'
                 className='h-full pl-8 pr-4 transition-colors border rounded-md sm:min-w-24 w-ful focus:outline-none focus:border-blue-300'
               />
-              <HiMiniChevronUpDown className='absolute transform -translate-y-1/2 top-1/2 left-2' />
+              <IoSearchOutline className='absolute transform -translate-y-1/2 top-1/2 left-2' />
             </div>}
           </div>
         </div>
