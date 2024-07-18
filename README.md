@@ -10,6 +10,12 @@ You can install **DBLTable** using npm:
 npm install dbl-table
 ```
 
+Add this line to your tailwind config file:
+
+```bash
+'./node_modules/dbl-table/**/*.{ts,tsx,js}'
+```
+
 ## Usage
 
 ### Basic Usage
