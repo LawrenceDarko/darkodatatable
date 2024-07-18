@@ -112,6 +112,7 @@ export default YourComponent;
 | `onRowSelection`            | `(rowData: { rowState: boolean, rowData: any }) => void` (optional) | Callback function triggered when a row is selected/deselected. It provides the row state and data.                                                     |
 | `customStyles`              | `customStylingProp` (optional)                        | Custom styles for various parts of the table (component, table, tableCell header, body, footer, stripeStyle).                                                         |
 | `userComponents`            | `() => React.ReactNode` (optional)                       | Allows users to pass their own custom components to the table.                                                         |
+| `showSearch`                | `boolean` (optional)                                  | A prop that shows the search bar of the table right at the top right corner. It is true by default 
 
 ## Additional Features
 
