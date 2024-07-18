@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SiMicrosoftexcel } from "react-icons/si";
 import { HiMiniChevronUpDown } from "react-icons/hi2";
 import { RxChevronDown, RxChevronUp } from "react-icons/rx";
@@ -36,6 +36,7 @@ type TableProps = {
   enableServerPagination?: boolean;
   onPaginationChange?: (pagination: { pageIndex: number; pageSize: number }) => void;
   onGlobalTableSearchChange?: (searchTerm: string) => void;
+  globalSearchText?: string;
   loading?: boolean;
   isError?: boolean;
   renderRowDetails?: (props: { row: any }) => React.ReactNode;
@@ -47,6 +48,7 @@ type TableProps = {
   onRowSelection?: (rowData: any) => void;
   customStyles?: customStylingProp;
   showSearch?: boolean;
+  totalRowsCount?: number;
 };
 
 const itemsPerPageOptions = [5, 8, 10, 15, 20]
@@ -59,6 +61,7 @@ const DBLTable: React.FC<TableProps> = ({
   enableServerPagination = false,
   onPaginationChange,
   onGlobalTableSearchChange,
+  globalSearchText,
   loading = false,
   isError = false,
   renderRowDetails,
@@ -69,15 +72,23 @@ const DBLTable: React.FC<TableProps> = ({
   tableTitle,
   onRowSelection,
   showSearch = true,
-  customStyles = {}
+  customStyles = {},
+  totalRowsCount,
 }) => {
   // State for pagination
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  // const [globalSearchText, setGlobalSearchText] = useState('');
 
   const [sortColumn, setSortColumn] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | ''>('asc');
+
+  useEffect(() => {
+    if (enableServerPagination && onPaginationChange) {
+      onPaginationChange({ pageIndex: currentPage, pageSize: itemsPerPage });
+    }
+  }, [currentPage, itemsPerPage]);
 
   const handleSort = (column: string) => {
     if (column === sortColumn) {
@@ -91,6 +102,7 @@ const DBLTable: React.FC<TableProps> = ({
   // if (!Array.isArray(data)) {
   //   throw new Error("Data must be an array");
   // }
+  
 
   const searchedData = Array.isArray(data) ? data.filter((item: any) => {
     if (typeof item === 'object') {
@@ -120,15 +132,19 @@ const DBLTable: React.FC<TableProps> = ({
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = Array.isArray(sortedData) ? sortedData.slice(startIndex, endIndex) : [];
 
-  const totalPages = Math.ceil((data?.length || 1) / itemsPerPage);
+  const totalPages = enableServerPagination ? Math.ceil((totalRowsCount || 1) / itemsPerPage) : Math.ceil((data?.length || 1) / itemsPerPage);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    onPaginationChange && onPaginationChange({ pageIndex: newPage, pageSize: itemsPerPage });
+    if (enableServerPagination && onPaginationChange) {
+      onPaginationChange({ pageIndex: newPage, pageSize: itemsPerPage });
+    }
   };
 
   const handleSearchChange = (term: string) => {
+    console.log('Search Term:', term)
     onGlobalTableSearchChange ? onGlobalTableSearchChange(term) : setSearchTerm(term);
+    // onGlobalTableSearchChange && onGlobalTableSearchChange(globalSearchText)
     setCurrentPage(1);
   };
 
@@ -225,31 +241,37 @@ const DBLTable: React.FC<TableProps> = ({
   return (
     <div className={`rounded max-h-auto inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`} style={customStyles.component}>
       <div className="flex items-center justify-between mb-4 bg-white">
-        <h3 className="text-lg font-semibold text-gray-800">{tableTitle ? tableTitle : ''}</h3>
-        <div className="flex items-center space-x-2">
-          {printTools && (
-              <div className="flex items-center justify-center">
-                <button
-                  className="flex items-center justify-center gap-2 px-3 py-1 text-white bg-green-500 rounded"
-                  onClick={handleExportToExcel}
-                >
-                  <SiMicrosoftexcel />
-                  Excel
-                </button>
-              </div>
-            )}
-          {toolbars &&
-            toolbars.map((toolbar, index) => (
-              <div key={index} className="mr-2">
-                {toolbar}
-              </div>
-            ))}
-          {showSearch && <input
-            type="text"
-            placeholder="Search..."
-            className="px-2 py-1 border border-gray-300 rounded focus:outline-none"
-            onChange={(e) => handleSearchChange(e.target.value)}
-          />}
+        <div className='flex flex-col items-center w-full md:justify-between md:flex-row'>
+          <h3 className="text-lg font-semibold text-gray-800">{tableTitle ? tableTitle : ''}</h3>
+          <div className="flex flex-wrap items-center justify-center w-full space-x-2 md:justify-end">
+            {printTools && (
+                <div className="flex items-center justify-center mb-2">
+                  <button
+                    className="flex items-center justify-center gap-2 px-3 py-1 text-white bg-green-500 rounded"
+                    onClick={handleExportToExcel}
+                  >
+                    <SiMicrosoftexcel />
+                    Excel
+                  </button>
+                </div>
+              )}
+            {toolbars &&
+              toolbars.map((toolbar, index) => (
+                <div key={index} className="mb-2 mr-2">
+                  {toolbar}
+                </div>
+              ))}
+            {showSearch && <div className="relative h-10 mb-2 w-ful">
+              <input
+                type="text"
+                value={ onGlobalTableSearchChange ? globalSearchText : searchTerm}
+                onChange={(e: any) => handleSearchChange(e.target.value)}
+                placeholder='Search anything'
+                className='h-full pl-8 pr-4 transition-colors border rounded-md sm:min-w-24 w-ful focus:outline-none focus:border-blue-300'
+              />
+              <HiMiniChevronUpDown className='absolute transform -translate-y-1/2 top-1/2 left-2' />
+            </div>}
+          </div>
         </div>
       </div>
       <div>
