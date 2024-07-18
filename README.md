@@ -13,7 +13,13 @@ npm install dbl-table
 Add this line to your tailwind config file:
 
 ```bash
-'./node_modules/dbl-table/**/*.{ts,tsx,js}'
+module.exports = {
+
+    content: [
+        "./node_modules/dbl-table/**/*.{ts,tsx,js}"
+    ]
+
+}
 ```
 
 ## Usage
