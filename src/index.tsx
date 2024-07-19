@@ -243,7 +243,7 @@ const DBLTable: React.FC<TableProps> = ({
     <div className={`rounded max-h-auto inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`} style={customStyles.component}>
       <div className="flex items-center justify-between mb-4 bg-white">
         <div className='flex flex-col items-center justify-between w-full md:flex-row'>
-          <h3 className="text-lg font-semibold text-gray-800">{tableTitle ? tableTitle : ''}</h3>
+          <h3 className="text-lg font-semibold text-gray-800 whitespace-nowrap">{tableTitle ? tableTitle : ''}</h3>
           <div className="flex flex-wrap items-center justify-center w-full space-x-2 md:justify-end">
             {printTools && (
                 <div className="flex items-center justify-center mb-2">
