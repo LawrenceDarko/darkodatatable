@@ -12,7 +12,7 @@ import './style.css'
 type TableColumn = {
   key: string;
   label: string;
-  renderCell?: (cellData: any) => React.ReactNode;
+  renderCell?: (cellData: any, rowData?: any) => React.ReactNode;
   width?: number | string;
 };
 
@@ -215,7 +215,7 @@ const DBLTable: React.FC<TableProps> = ({
               style={{...customStyles.tableCell, overflow: 'hidden', textOverflow: 'ellipsis'}}
             >
               {column.renderCell
-                ? column.renderCell(row[column.key])
+                ? column.renderCell(row[column.key], row)
                 : row[column.key]
               }
           </td>
