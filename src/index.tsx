@@ -84,6 +84,44 @@ const DBLTable: React.FC<TableProps> = ({
 
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | ''>('asc');
+  const [selectedRows, setSelectedRows] = useState<any[]>([]);
+  const [selectAll, setSelectAll] = useState<'none' | 'all'>('none');
+
+  const handleRowSelection = (rowData: any) => {
+    setSelectedRows((prevSelectedRows) => {
+      const isRowSelected = prevSelectedRows.some(row => row === rowData);
+      const updatedSelectedRows = isRowSelected
+        ? prevSelectedRows.filter(row => row !== rowData)
+        : [...prevSelectedRows, rowData];
+
+      if (onRowSelection) {
+        onRowSelection(updatedSelectedRows);
+      }
+
+      return updatedSelectedRows;
+    });
+  };
+
+  
+
+  const handleSelectAllChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectAll(value as 'none' | 'all');
+
+    if (value === 'all') {
+      setSelectedRows(data || []);
+      if (onRowSelection) {
+        onRowSelection(data || []);
+      }
+    } else {
+      setSelectedRows([]);
+      if (onRowSelection) {
+        onRowSelection([]);
+      }
+    }
+  };
+
+  
 
   useEffect(() => {
     if (enableServerPagination && onPaginationChange) {
@@ -165,20 +203,36 @@ const DBLTable: React.FC<TableProps> = ({
     }
   };
 
+  const showCheckboxColumn = !!onRowSelection;
 
   
-  const TableRowComp = ({row, rowIndex}: any) => {
-    const [displayRenderDetails, setDisplayRenderDetails] = useState<boolean>(false);
-    const [rowSelectionState, setRowSelectionState] = useState<boolean | any>(false)
 
-    const handleRowSelection = (rowData: any) => {
-      if(rowData && onRowSelection){ 
-        setRowSelectionState(!rowSelectionState)
-        // console.log('Row Data:', rowData)
-        // console.log('Row State:', !rowSelectionState)
-        onRowSelection({rowState: !rowSelectionState, rowData})
+
+  
+  const TableRowComp = ({
+      row,
+      rowIndex ,
+      selectedRows, 
+      onRowSelection,
+      showCheckboxColumn,
+    }:
+    { 
+      row: any;
+      rowIndex: number; 
+      selectedRows: any[];
+      onRowSelection?: (rowData: any) => void;
+      showCheckboxColumn?: boolean;
+    }) => {
+    const [displayRenderDetails, setDisplayRenderDetails] = useState<boolean>(false);
+    // const [rowSelectionState, setRowSelectionState] = useState<boolean | any>(false)
+
+    const isSelected = selectedRows.includes(row);
+
+    const handleCheckboxChange = () => {
+      if (onRowSelection) {
+        onRowSelection(row);
       }
-    }
+    };
 
     return (
       <React.Fragment>
@@ -187,15 +241,20 @@ const DBLTable: React.FC<TableProps> = ({
             ...(enableStripStyle && rowIndex % 2 === 0 && customStyles.stripeStyle
               ? customStyles.stripeStyle
               : {}),
-            ...(rowSelectionState && { backgroundColor: '#DFF7FF' })
+            ...(isSelected && { backgroundColor: '#DFF7FF' })
           }}
           className={`${enableStripStyle && rowIndex % 2 === 0 ? `bg-gray-100` : 'bg-white'}`}
           >
-          {onRowSelection && 
+          {showCheckboxColumn && (
             <td className='px-4 py-3 text-left border-t border-r border-gray-100'>
-              <input className='w-[14px] h-[14px]' type="checkbox" value={rowSelectionState} onChange={()=>handleRowSelection(row)}/>
+              <input
+                className='w-[14px] h-[14px]'
+                type="checkbox"
+                checked={isSelected}
+                onChange={handleCheckboxChange}
+              />
             </td>
-          }
+          )}
           {renderRowDetails && (
             <th onClick={() => setDisplayRenderDetails(!displayRenderDetails)} className="px-4 py-3 text-left border-t border-r border-gray-100">
               {displayRenderDetails ? <RxChevronUp /> : <RxChevronDown />}
@@ -282,7 +341,16 @@ const DBLTable: React.FC<TableProps> = ({
           <table className="w-full text-[15px] border-collapse" style={{...customStyles.table}}>
             <thead style={customStyles.header} className={`${!enableStripStyle && 'bg-gray-100'}`}>
               <tr>
-              {onRowSelection &&  <th className="px-4 py-3 text-left border-t border-r border-gray-100">Select</th>}
+              {/* {onRowSelection &&  <th className="px-4 py-3 text-left border-t border-r border-gray-100">Select</th>} */}
+              {onRowSelection &&  
+                <th className="px-4 py-3 text-left border-t border-r border-gray-100">
+                  <input
+                    type="checkbox"
+                    checked={selectAll === 'all'}
+                    onChange={() => handleSelectAllChange({ target: { value: selectAll === 'all' ? 'none' : 'all' } } as any)}
+                  />
+                </th>
+                }
               {renderRowDetails && <th className="px-4 py-3 text-left border-t border-r border-gray-100"><HiMiniChevronUpDown /></th>}
                 {columns.map((column, index) => (
                   <th
@@ -333,7 +401,7 @@ const DBLTable: React.FC<TableProps> = ({
                 ) : (
                   // Render table rows
                   paginatedData?.map((row, rowIndex) => (
-                    <TableRowComp key={rowIndex} row={row} rowIndex={rowIndex}/>
+                    <TableRowComp key={rowIndex} row={row} rowIndex={rowIndex} selectedRows={selectedRows} onRowSelection={handleRowSelection} showCheckboxColumn={showCheckboxColumn}/>
                   ))
                 )
               )
