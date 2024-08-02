@@ -413,7 +413,7 @@ const DBLTable: React.FC<TableProps> = ({
 
           </table>
           </div>
-          <div className="sticky bottom-0 flex items-center justify-between w-full mt-4">
+          <div className="sticky bottom-0 flex items-center justify-between w-full mt-4 bg-white">
             <button onClick={()=>setShowFullScreen(prev => !prev)}>
               {showFullScreen ? <RiFullscreenExitLine size={20}/> : <RiFullscreenFill size={20}/> }
             </button>
