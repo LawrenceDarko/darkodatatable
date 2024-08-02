@@ -1,6 +1,6 @@
 {
 	"name": "dbl-table",
-	"version": "1.3.11",
+	"version": "1.4.0",
 	"description": "A simple lightweight React Table Component",
 	"main": "dist/index.js",
 	"module": "dist/index.esm.js",

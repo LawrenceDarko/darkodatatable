@@ -6,6 +6,8 @@ import { RxChevronDown, RxChevronUp } from "react-icons/rx";
 import { TbMoodCry } from "react-icons/tb";
 import { ImSpinner2 } from "react-icons/im";
 import { VscError } from "react-icons/vsc";
+import { IoIosArrowDropright, IoIosArrowDropleft } from "react-icons/io";
+import { RiFullscreenFill, RiFullscreenExitLine  } from "react-icons/ri";
 // import './styles.css'
 import './style.css'
 
@@ -86,6 +88,7 @@ const DBLTable: React.FC<TableProps> = ({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | ''>('asc');
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [selectAll, setSelectAll] = useState<'none' | 'all'>('none');
+  const [showFullScreen, setShowFullScreen] = useState(false)
 
   const handleRowSelection = (rowData: any) => {
     setSelectedRows((prevSelectedRows) => {
@@ -299,11 +302,11 @@ const DBLTable: React.FC<TableProps> = ({
 
 
   return (
-    <div className={`rounded max-h-auto inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`} style={customStyles.component}>
+    <div className={`rounded ${showFullScreen ? 'fixed inset-0 z-50' : ''} max-h-auto inter-light overflow-auto bg-white text-gray-500 shadow-lg p-6 w-full mx-auto mb-6 ${enableStripStyle ? 'striped' : ''}`} style={customStyles.component}>
       <div className="flex items-center justify-between mb-4 bg-white">
         <div className='flex flex-col items-center justify-between w-full md:flex-row'>
           <h3 className="text-lg font-semibold text-gray-800 whitespace-nowrap">{tableTitle ? tableTitle : ''}</h3>
-          <div className="flex flex-wrap items-center justify-center w-full space-x-2 md:justify-end">
+          <div className="flex flex-col items-center justify-center w-full space-x-2 md:flex-row md:justify-end">
             {printTools && (
                 <div className="flex items-center justify-center mb-2">
                   <button
@@ -337,7 +340,7 @@ const DBLTable: React.FC<TableProps> = ({
       <div>
           {userComponents}
       </div>
-        <div style={customStyles.tableWrapper} className='max-h-[600px] overflow-auto my-custom-scrollbar2'>
+        <div style={customStyles.tableWrapper} className='max-h-[600pxx] overflow-auto my-custom-scrollbar2'>
           <table className="w-full text-[15px] border-collapse" style={{...customStyles.table}}>
             <thead style={customStyles.header} className={`${!enableStripStyle && 'bg-gray-100'}`}>
               <tr>
@@ -410,47 +413,55 @@ const DBLTable: React.FC<TableProps> = ({
 
           </table>
           </div>
-          <div className="sticky bottom-0 flex items-center justify-between w-full mt-4 bg-white">
-            <div>
-              <span className="mr-2">Items per page:</span>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => setItemsPerPage(parseInt(e.target.value, 10))}
-                className="px-2 py-1 border border-gray-300 rounded"
-              >
-                {itemsPerPageOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center space-x-2">
-              {totalPages > 1 && (
-                <div className="flex justify-end mt-4">
-                  <button
-                    className={`px-3 py-1 text-gray-500 bg-gray-300 rounded ${
-                      currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span className="mx-2">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <button
-                    className={`px-3 py-1 text-gray-500 bg-gray-300 rounded ${
-                      currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
+          <div className="sticky bottom-0 flex items-center justify-between w-full mt-4">
+            <button onClick={()=>setShowFullScreen(prev => !prev)}>
+              {showFullScreen ? <RiFullscreenExitLine size={20}/> : <RiFullscreenFill size={20}/> }
+            </button>
+          
+            <div className='flex items-center justify-end gap-3'>
+              <div className='flex items-center justify-center gap-1'>
+                <span className="hidden mr-2 md:block">Rows per page:</span>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => setItemsPerPage(parseInt(e.target.value, 10))}
+                  className="px-2 py-1 border border-gray-300 rounded"
+                >
+                  {itemsPerPageOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center justify-center ">
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-end">
+                    <button
+                      className={`px-3 py-1 text-gray-500 rounded ${
+                        currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      {/* <p className='hidden md:block'>Previous</p> */}
+                      <IoIosArrowDropleft size={30} className=''/>
+                    </button>
+                    <span className="mx-2">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      className={`px-3 py-1 text-gray-500 rounded ${
+                        currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      {/* <p className='hidden md:block'>Next</p> */}
+                      <IoIosArrowDropright size={30} className=''/>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         
