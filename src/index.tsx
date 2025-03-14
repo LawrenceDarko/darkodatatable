@@ -82,6 +82,7 @@ const DBLTable: React.FC<TableProps> = ({
   const [itemsPerPage, setItemsPerPage] = useState(8);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [tableData, setTableData] = useState(data);
   // const [globalSearchText, setGlobalSearchText] = useState('');
 
   const [sortColumn, setSortColumn] = useState<string | null>(null);
@@ -112,9 +113,9 @@ const DBLTable: React.FC<TableProps> = ({
     setSelectAll(value as 'none' | 'all');
 
     if (value === 'all') {
-      setSelectedRows(data || []);
+      setSelectedRows(tableData || []);
       if (onRowSelection) {
-        onRowSelection(data || []);
+        onRowSelection(tableData || []);
       }
     } else {
       setSelectedRows([]);
@@ -132,6 +133,18 @@ const DBLTable: React.FC<TableProps> = ({
     }
   }, [currentPage, itemsPerPage]);
 
+  useEffect(() => {
+    if(enableServerPagination &&  onPaginationChange && data && data.length > 0) {
+      setTableData(data);
+      // setCurrentPage(1); // Reset to page 1 when new data is received
+    }
+  }, [data, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [itemsPerPage]);
+  
+
   const handleSort = (column: string) => {
     if (column === sortColumn) {
       setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
@@ -141,12 +154,12 @@ const DBLTable: React.FC<TableProps> = ({
     }
   };
 
-  // if (!Array.isArray(data)) {
+  // if (!Array.isArray(tableData)) {
   //   throw new Error("Data must be an array");
   // }
   
 
-  const searchedData = Array.isArray(data) ? data.filter((item: any) => {
+  const searchedData = Array.isArray(tableData) ? tableData.filter((item: any) => {
     if (typeof item === 'object') {
       return Object.values(item).some((value) =>
         typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
@@ -174,7 +187,7 @@ const DBLTable: React.FC<TableProps> = ({
   const endIndex = startIndex + itemsPerPage;
   const paginatedData = Array.isArray(sortedData) ? sortedData.slice(startIndex, endIndex) : [];
 
-  const totalPages = enableServerPagination ? Math.ceil((totalRowsCount || 1) / itemsPerPage) : Math.ceil((data?.length || 1) / itemsPerPage);
+  const totalPages = enableServerPagination ? Math.ceil((totalRowsCount || 1) / itemsPerPage) : Math.ceil((tableData?.length || 1) / itemsPerPage);
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -193,7 +206,7 @@ const DBLTable: React.FC<TableProps> = ({
   const handleExportToExcel = () => {
     try {
       const csvContent = columns.map(column => column.label).join(',') + '\n';
-      const csvRows = data.map((row: any) => columns.map(column => row[column.key]).join(',')).join('\n');
+      const csvRows = tableData.map((row: any) => columns.map(column => row[column.key]).join(',')).join('\n');
       const csvData = csvContent + csvRows;
 
       const blob = new Blob([csvData], { type: 'text/csv' });
@@ -377,12 +390,12 @@ const DBLTable: React.FC<TableProps> = ({
                 <td colSpan={columns.length + (showActions ? 1 : 0) + (onRowSelection ? 1 : 0) + (renderRowDetails ? 1 : 0)} className="py-20">
                   <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
                     <VscError className="mr-2 text-[4rem] text-red-300" />
-                    <span className="text-gray-500">Error in fetching data. Please try again.</span>
+                    <span className="text-gray-500">Error in fetching tableData. Please try again.</span>
                   </div>
                 </td>
               </tr>
             ) : (
-              data?.length === 0 ? (
+              tableData?.length === 0 ? (
                 <tr className='border'>
                   <td colSpan={columns.length + (showActions ? 1 : 0) + (onRowSelection ? 1 : 0) + (renderRowDetails ? 1 : 0)} className="py-20">
                     <div className='flex flex-col items-center justify-center w-full h-full gap-2'>
